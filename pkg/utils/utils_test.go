@@ -4,6 +4,7 @@
 package utils
 
 import (
+	"os"
 	"reflect"
 	"testing"
 
@@ -156,10 +157,13 @@ var _ = Describe("utility functions", func() {
 			images := GetTestImages()
 			Expect(len(images)).To(BeNumerically(">", 0))
 		})
+
 		It("gets deployments", func() {
 			mch := resources.EmptyMCH()
 			d := GetDeployments(&mch)
+			os.Setenv("OPERATOR_PACKAGE", "advanced-cluster-management")
 			Expect(len(d)).To(Equal(1))
+
 			Expect(d[0].Name).To(Equal("multiclusterhub-repo"))
 			Expect(d[0].Namespace).To(Equal(resources.MulticlusterhubNamespace))
 		})
@@ -168,8 +172,30 @@ var _ = Describe("utility functions", func() {
 			mch.Enable(operatorsv1.ClusterBackup)
 			mch.Enable(operatorsv1.ClusterProxyAddon)
 			appsubs := GetAppsubs(&mch)
+			os.Setenv("OPERATOR_PACKAGE", "advanced-cluster-management")
 			Expect(len(appsubs)).To(Equal(8))
+
 		})
+
+		It("gets deployments in Community Mode", func() {
+			mch := resources.EmptyMCH()
+			d := GetDeployments(&mch)
+			os.Setenv("OPERATOR_PACKAGE", "stolostron")
+			Expect(len(d)).To(Equal(2))
+
+			Expect(d[0].Name).To(Equal("multiclusterhub-repo"))
+			Expect(d[0].Namespace).To(Equal(resources.MulticlusterhubNamespace))
+		})
+		It("gets appsubs in Community Mode", func() {
+			mch := resources.EmptyMCH()
+			mch.Enable(operatorsv1.ClusterBackup)
+			mch.Enable(operatorsv1.ClusterProxyAddon)
+			appsubs := GetAppsubs(&mch)
+			os.Setenv("OPERATOR_PACKAGE", "stolostron")
+			Expect(len(appsubs)).To(Equal(7))
+
+		})
+
 		It("gets custom resources", func() {
 			mch := resources.EmptyMCH()
 			cr := GetCustomResources(&mch)

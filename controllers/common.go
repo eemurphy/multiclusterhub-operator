@@ -24,7 +24,6 @@ import (
 	"github.com/openshift/library-go/pkg/operator/resource/resourcemerge"
 	subv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	searchv2v1alpha1 "github.com/stolostron/search-v2-operator/api/v1alpha1"
-	slice "golang.org/x/exp/slices"
 	apixv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	subhelmv1 "open-cluster-management.io/multicloud-operators-subscription/pkg/apis/apps/helmrelease/v1"
 
@@ -1717,8 +1716,10 @@ func (r *MultiClusterHubReconciler) CheckConsole(ctx context.Context) (bool, err
 	if !constraint.Check(semverVersion) {
 		return true, nil
 	}
-	if slice.Contains(versionStatus.Status.Capabilities.EnabledCapabilities, "Console") {
-		return true, nil
+	for _, v := range versionStatus.Status.Capabilities.EnabledCapabilities {
+		if v == "Console" {
+			return true, nil
+		}
 	}
 	return false, nil
 }

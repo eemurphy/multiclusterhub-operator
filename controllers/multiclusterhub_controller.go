@@ -372,14 +372,6 @@ func (r *MultiClusterHubReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	}
 
 	// Install the rest of the subscriptions in no particular order
-	if multiClusterHub.Enabled(operatorv1.Appsub) {
-		result, err = r.ensureAppsub(ctx, multiClusterHub, r.CacheSpec.ImageOverrides)
-	} else {
-		result, err = r.ensureNoAppsub(ctx, multiClusterHub, r.CacheSpec.ImageOverrides)
-	}
-	if result != (ctrl.Result{}) {
-		return result, err
-	}
 	if multiClusterHub.Enabled(operatorv1.Console) && ocpConsole {
 		result, err = r.ensureConsole(ctx, multiClusterHub, r.CacheSpec.ImageOverrides)
 	} else {

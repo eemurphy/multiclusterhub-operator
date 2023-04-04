@@ -33,14 +33,14 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # operator.open-cluster-management.io/multiclusterhub-operator-bundle:$VERSION and operator.open-cluster-management.io/multiclusterhub-operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= quay.io/stolostron/multiclusterhub-operator
+IMAGE_TAG_BASE ?= quay.io/rh_ee_erinmurp/multiclusterhub-operator
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
 BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 
 # Image URL to use all building/pushing image targets
-REGISTRY ?= quay.io/stolostron
+REGISTRY ?= quay.io/rh_ee_erinmurp
 IMG ?= $(REGISTRY)/multiclusterhub-operator:$(VERSION)
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:crdVersions=v1"
@@ -96,7 +96,7 @@ test-prep: manifests generate fmt vet envtest ## prepare to run tests.
 	echo "Ready to run unit tests"
 
 test: manifests generate fmt vet envtest ## Run tests.
-	OPERATOR_VERSION=9.9.9 KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" \
+	OPERATOR_VERSION=9.9.9 KUBEBUILDER_ASSETS="$(shell $(ENVTEST) --arch=amd64 use $(ENVTEST_K8S_VERSION) -p path)" \
 	  go test $(shell go list ./... | grep -E -v "test") -coverprofile cover.out
 
 ##@ Build

@@ -1,51 +1,53 @@
-# This is a basic workflow to help you get started with Actions
+# Copyright Contributors to the Open Cluster Management project
 
-name: Regenerate Operator Bundles [2.5]
+name: Update CRDs sha
 
-# Controls when the action will run. 
-on:
-  # Runs every day
-  schedule:
-    - cron: "0 0 * * *"
-
-  # Allows you to run this workflow manually from the Actions tab
+on: 
+  # trigger from charts
+  repository_dispatch:
+    types: [ crd-change ]
+  
+  # manual trigger
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  crd-update:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          repo-token: ${{secrets.ERIN_ACM_SECRET}}
+          token: ${{ secrets.ERIN_ACM_SECRET }}
           ref: release-2.5
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-    
-      # Runs a set of commands using the runners shell
-      - name: Regenerate Operator Bundles
+
+      - name: Auto Trigger info
+        if: github.event_name == 'repository_dispatch'
         run: |
-          make regenerate-operator-bundles
-      
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+          echo 'commit_message<<EOF' >> $GITHUB_ENV
+          echo "Chart update run automatically via $GITHUB_EVENT_NAME" >> $GITHUB_ENV
+          echo "Initiated by - $GITHUB_ACTOR" >> $GITHUB_ENV
+          echo "Chart Repo - ${{ github.event.client_payload.repository }}" >> $GITHUB_ENV
+          echo "Chart Branch - ${{ github.event.client_payload.ref }}" >> $GITHUB_ENV
+          echo "Chart SHA - ${{ github.event.client_payload.sha }}" >> $GITHUB_ENV
+          echo "Workflow URL - $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Manual Trigger info
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo 'commit_message<<EOF' >> $GITHUB_ENV
+          echo "Chart update run manually via $GITHUB_EVENT_NAME" >> $GITHUB_ENV
+          echo "Initiated by - $GITHUB_ACTOR" >> $GITHUB_ENV
+          echo "Workflow URL - $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Update SHA
+        run: bash hack/scripts/sync-hub-crds.sh
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4.9.2
         with:
-          signoff: true
-          branch: "regenerate-operator-bundles-2.5"
-          delete-branch: true
-          title: "Operator Bundle Update [2.5]"
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          labels: do-not-merge/hold
-          assignees: cameronmwall,JakobGray,eemurphy
+          commit_message: ${{ env.commit_message }}
+          commit_options: '--signoff'
+          file_pattern: hack/scripts/currentCRDs.txt
+          skip_fetch: true
+          commit_user_name: GitHub Actions
+          commit_user_email: noreply@github.com
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com> 

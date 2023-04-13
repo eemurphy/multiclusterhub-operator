@@ -26,7 +26,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          repo-token: ${{secrets.ERIN_ACM_SECRET}}
+          token: ${{secrets.ERIN_ACM_SECRET}}
           ref: release-2.7
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2

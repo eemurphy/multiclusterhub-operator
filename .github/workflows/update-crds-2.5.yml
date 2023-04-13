@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.ERIN_ACM_SECRET}}
+          token: ${{ secrets.ERIN_ACM_SECRET }}
           ref: release-2.5
 
       - name: Auto Trigger info

@@ -48,15 +48,16 @@ const (
 	MCESubscriptionNamespace     = "multicluster-engine"
 	ClusterSubscriptionNamespace = "open-cluster-management-backup"
 
-	MCEManagedByLabel          = "multiclusterhubs.operator.open-cluster-management.io/managed-by"
-	InsightsChartLocation      = "/charts/toggle/insights"
-	AppsubChartLocation        = "/charts/toggle/multicloud-operators-subscription"
-	SearchV2ChartLocation      = "/charts/toggle/search-v2-operator"
-	CLCChartLocation           = "/charts/toggle/cluster-lifecycle"
-	ClusterBackupChartLocation = "/charts/toggle/cluster-backup"
-	GRCChartLocation           = "/charts/toggle/grc"
-	ConsoleChartLocation       = "/charts/toggle/console"
-	VolsyncChartLocation       = "/charts/toggle/volsync-controller"
+	MCEManagedByLabel              = "multiclusterhubs.operator.open-cluster-management.io/managed-by"
+	InsightsChartLocation          = "/charts/toggle/insights"
+	AppsubChartLocation            = "/charts/toggle/multicloud-operators-subscription"
+	SearchV2ChartLocation          = "/charts/toggle/search-v2-operator"
+	CLCChartLocation               = "/charts/toggle/cluster-lifecycle"
+	ClusterBackupChartLocation     = "/charts/toggle/cluster-backup"
+	GRCChartLocation               = "/charts/toggle/grc"
+	ConsoleChartLocation           = "/charts/toggle/console"
+	VolsyncChartLocation           = "/charts/toggle/volsync-controller"
+	ClusterPermissionChartLocation = "/charts/toggle/cluster-permission"
 )
 
 var (
@@ -292,12 +293,12 @@ func GetTestImages() []string {
 		"PROMETHEUS_CONFIG_RELOADER", "PROMETHEUS_OPERATOR", "RBAC_QUERY_PROXY", "REDISGRAPH_TLS",
 		"SEARCH_AGGREGATOR", "SEARCH_API", "SEARCH_COLLECTOR", "SEARCH_E2E", "SEARCH_INDEXER", "SEARCH_OPERATOR",
 		"SEARCH_V2_API", "SUBMARINER_ADDON", "THANOS", "VOLSYNC", "VOLSYNC_ADDON_CONTROLLER", "VOLSYNC_MOVER_RCLONE",
-		"VOLSYNC_MOVER_RESTIC", "VOLSYNC_MOVER_RSYNC", "kube_rbac_proxy", "insights_metrics", "insights_client",
+		"VOLSYNC_MOVER_RESTIC", "VOLSYNC_MOVER_RSYNC", "CLUSTER_PERMISSION", "kube_rbac_proxy", "insights_metrics", "insights_client",
 		"search_collector", "search_indexer", "search_v2_api", "postgresql_13", "search_v2_operator", "klusterlet_addon_controller",
 		"governance_policy_propagator", "governance_policy_addon_controller", "cert_policy_controller", "iam_policy_controller",
 		"config_policy_controller", "governance_policy_framework_addon",
 		"cluster_backup_controller", "console", "volsync_addon_controller", "multicluster_operators_application",
-		"multicloud_integrations", "multicluster_operators_channel", "multicluster_operators_subscription"}
+		"multicloud_integrations", "multicluster_operators_channel", "multicluster_operators_subscription", "cluster_permission"}
 
 }
 
@@ -413,6 +414,9 @@ func GetDeploymentsForStatus(m *operatorsv1.MultiClusterHub, ocpConsole bool) []
 	}
 	if m.Enabled(operatorsv1.Volsync) {
 		nn = append(nn, types.NamespacedName{Name: "volsync-addon-controller", Namespace: m.Namespace})
+	}
+	if m.Enabled(operatorsv1.ClusterPermission) {
+		nn = append(nn, types.NamespacedName{Name: "cluster-permission", Namespace: m.Namespace})
 	}
 	return nn
 }

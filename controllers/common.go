@@ -796,6 +796,7 @@ func (r *MultiClusterHubReconciler) getClusterVersion(ctx context.Context) (stri
 	return clusterVersion.Status.History[0].Version, nil
 }
 
+// ERIN
 func (r *MultiClusterHubReconciler) ensureSearchCR(m *operatorv1.MultiClusterHub) (ctrl.Result, error) {
 	ctx := context.Background()
 
@@ -823,6 +824,7 @@ func (r *MultiClusterHubReconciler) ensureSearchCR(m *operatorv1.MultiClusterHub
 	return ctrl.Result{}, nil
 }
 
+// ERIN
 func (r *MultiClusterHubReconciler) ensureNoSearchCR(m *operatorv1.MultiClusterHub) (ctrl.Result, error) {
 	ctx := context.Background()
 

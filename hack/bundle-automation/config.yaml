@@ -24,3 +24,16 @@
         multicluster-operators-channel: multicluster_operators_channel
       exclusions:
         - readOnlyRootFilesystem
+- repo_name: cluster-permission
+  github_ref: "https://github.com/stolostron/cluster-permission.git"
+  branch: "release-2.9"
+  operators:
+    - name: cluster-permission
+      bundlePath: "deploy/olm-catalog/multicluster-operators-subscription/manifests/" #CHANGE
+      imageMappings: #CHANGE
+        multicluster-operators-subscription: multicluster_operators_subscription
+        multicloud-integrations: multicloud_integrations
+        multicluster-operators-application: multicluster_operators_application
+        multicluster-operators-channel: multicluster_operators_channel
+      exclusions:
+        - readOnlyRootFilesystem
